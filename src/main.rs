@@ -61,3 +61,58 @@ impl ElectronicCoin {
         // verify chain of signatures
     }
 }
+
+struct Transaction;
+struct Block;
+struct ProofOfWork;
+
+struct BcNode {
+    transactions: Vec<Transaction>,
+    blocks: Vec<Block>,
+}
+
+impl BcNode {
+    pub fn new() -> Self {
+        BcNode {
+            transactions: vec![],
+            blocks: vec![],
+        }
+    }
+
+    pub fn start() {
+        // begin listening for transactions and working on block (on a separate thread?)
+        let (sender, receiver) = std::sync::mpsc::channel::<ProofOfWork>();
+
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_secs(3));
+            sender.send(ProofOfWork {}).unwrap();
+        });
+
+        loop {
+            match receiver.try_recv() {
+                Ok(pow) => {
+                    // broadcast to all other peers over network
+                }
+                Err(e) => {
+                    // not sure what to do now
+                }
+            }
+
+            // listen for block or transactions incoming from peers over the network
+        }
+    }
+
+    pub fn collect(&mut self, t: Transaction) {
+        // execute in response to receiving a transaction from a peer
+        // verify and  include this transaction in the current block
+        self.transactions.push(t);
+        // continue with working on block (proof of work)
+    }
+
+    pub fn accept(&mut self, b: Block) {
+        // execute in response to receiving a block from a peer
+        // verify this block and update the local blocks accordingly
+        self.blocks.push(b);
+        // continue with working on block (proof of work)
+    }
+}
